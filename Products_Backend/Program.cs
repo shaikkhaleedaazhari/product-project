@@ -6,19 +6,29 @@ using ProductService.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1?? Add services
+// 👇 Configure Kestrel to listen on all interfaces (0.0.0.0)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(7001); // HTTP
+    options.ListenAnyIP(7000, listenOptions =>
+    {
+        listenOptions.UseHttps(); // HTTPS
+    });
+});
+
+// 1️⃣ Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 2?? EF Core
+// 2️⃣ EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3?? Repository
+// 3️⃣ Repository
 builder.Services.AddScoped<ProductRepository>();
 
-// 4?? AutoMapper (manual registration)
+// 4️⃣ AutoMapper (manual registration)
 var mappingConfig = new MapperConfiguration(cfg =>
 {
     cfg.AddProfile<AutoMapperProfile>();
@@ -26,13 +36,13 @@ var mappingConfig = new MapperConfiguration(cfg =>
 IMapper mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-// 5?? Optional: Enable CORS for your front-ends
+// 5️⃣ Optional: Enable CORS for your front-ends
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-            "http://localhost:8080",  // your UI ports
+            "http://localhost:8080",
             "http://localhost:8081",
             "https://localhost:3000"
         )
@@ -43,7 +53,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 6?? Middleware
+// 6️⃣ Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
