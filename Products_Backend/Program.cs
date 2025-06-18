@@ -6,14 +6,10 @@ using ProductService.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 👇 Configure Kestrel to listen on all interfaces (0.0.0.0)
+// 👇 Configure Kestrel to listen on all interfaces (HTTP only)
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(7001); // HTTP
-    options.ListenAnyIP(7000, listenOptions =>
-    {
-        listenOptions.UseHttps(); // HTTPS
-    });
+    options.ListenAnyIP(7001); // Only HTTP
 });
 
 // 1️⃣ Add services
@@ -36,7 +32,7 @@ var mappingConfig = new MapperConfiguration(cfg =>
 IMapper mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-// 5️⃣ Optional: Enable CORS for your front-ends
+// 5️⃣ CORS for your frontends
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -61,7 +57,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ⚠️ Removed HTTPS redirection
+// app.UseHttpsRedirection();
+
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
