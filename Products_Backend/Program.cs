@@ -42,6 +42,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
+            "http://18.234.196.58",
             "http://localhost:8080",
             "http://localhost:8081",
             "https://localhost:3000"
