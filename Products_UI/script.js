@@ -1,5 +1,5 @@
-// API URL - This should point to your API Gateway
-const API_URL = 'https://localhost:7000/api/products';
+// API URL - This should point to your EC2 backend IP and port
+const API_URL = 'http://18.234.196.58:7001/api/products';
 
 // DOM Elements
 const productsContainer = document.getElementById('products-container');
