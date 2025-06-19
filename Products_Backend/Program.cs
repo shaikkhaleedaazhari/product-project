@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // ⚠️ Removed HTTPS redirection
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
