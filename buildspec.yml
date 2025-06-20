@@ -40,5 +40,5 @@ phases:
 
 artifacts:
   files:
-    - backend-deployment.yaml
-    - frontend-deployment.yaml
+    - Products_Backend/backend-deployment.yaml
+    - Products_UI/frontend-deployment.yaml
