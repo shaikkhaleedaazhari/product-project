@@ -9,6 +9,10 @@ env:
     DOCKERHUB_PASSWORD: dockerhub:password
 
 phases:
+  install:
+    commands:
+      - set -e  # Exit immediately on error
+
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
@@ -32,13 +36,18 @@ phases:
 
   post_build:
     commands:
-      - echo Pushing backend image to Docker Hub...
+      - echo Pushing backend image...
       - docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$VERSION_TAG
-
-      - echo Pushing frontend image to Docker Hub...
+      - echo Pushing frontend image...
       - docker push $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$VERSION_TAG
+
+      - echo Copying deployment files to root for artifacts...
+      - cp Products_Backend/backend-deployment.yaml .
+      - cp Products_UI/frontend-deployment.yaml .
+      - echo Files in root after copy:
+      - ls -lh
 
 artifacts:
   files:
-    - Products_Backend/backend-deployment.yaml
-    - Products_UI/frontend-deployment.yaml
+    - backend-deployment.yaml
+    - frontend-deployment.yaml
