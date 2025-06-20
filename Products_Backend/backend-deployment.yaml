@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: product-backend
-          image: akashchandran/dotnetbackend:v15
+          image: akashchandran/product-backend:v15
           ports:
             - containerPort: 7001
           env:
