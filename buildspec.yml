@@ -11,24 +11,25 @@ env:
 phases:
   install:
     commands:
-      - set -e  # Exit immediately on error
+      - echo "Starting install phase..."
+      - set -e  # exit if any command fails
 
   pre_build:
     commands:
-      - echo Logging in to Docker Hub...
+      - echo "Logging in to Docker Hub..."
       - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
       - VERSION_TAG=v$CODEBUILD_BUILD_NUMBER
       - echo "Version tag is $VERSION_TAG"
 
   build:
     commands:
-      - echo Building backend image...
+      - echo "Building backend image..."
       - cd Products_Backend
       - docker build -t $BACKEND_IMAGE_NAME:$VERSION_TAG .
       - docker tag $BACKEND_IMAGE_NAME:$VERSION_TAG $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$VERSION_TAG
       - cd ..
 
-      - echo Building frontend image...
+      - echo "Building frontend image..."
       - cd Products_UI
       - docker build -t $FRONTEND_IMAGE_NAME:$VERSION_TAG .
       - docker tag $FRONTEND_IMAGE_NAME:$VERSION_TAG $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$VERSION_TAG
@@ -36,15 +37,16 @@ phases:
 
   post_build:
     commands:
-      - echo Pushing backend image...
+      - echo "Pushing backend image to Docker Hub..."
       - docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$VERSION_TAG
-      - echo Pushing frontend image...
+
+      - echo "Pushing frontend image to Docker Hub..."
       - docker push $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$VERSION_TAG
 
-      - echo Copying deployment files to root for artifacts...
+      - echo "Copying deployment YAMLs to root for CodePipeline..."
       - cp Products_Backend/backend-deployment.yaml .
       - cp Products_UI/frontend-deployment.yaml .
-      - echo Files in root after copy:
+      - echo "Final root directory content:"
       - ls -lh
 
 artifacts:
