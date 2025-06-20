@@ -1,0 +1,44 @@
+version: 0.2
+
+env:
+  variables:
+    BACKEND_IMAGE_NAME: product-backend
+    FRONTEND_IMAGE_NAME: product-frontend
+  secrets-manager:
+    DOCKERHUB_USERNAME: dockerhub:username
+    DOCKERHUB_PASSWORD: dockerhub:password
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Docker Hub...
+      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo Image tag: $IMAGE_TAG
+
+  build:
+    commands:
+      - echo Building BACKEND Docker image...
+      - cd Products_Backend
+      - docker build -t $BACKEND_IMAGE_NAME:$IMAGE_TAG .
+      - docker tag $BACKEND_IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG
+      - cd ..
+
+      - echo Building FRONTEND Docker image...
+      - cd Products_UI
+      - docker build -t $FRONTEND_IMAGE_NAME:$IMAGE_TAG .
+      - docker tag $FRONTEND_IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$IMAGE_TAG
+      - cd ..
+
+  post_build:
+    commands:
+      - echo Pushing BACKEND image to Docker Hub...
+      - docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG
+
+      - echo Pushing FRONTEND image to Docker Hub...
+      - docker push $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$IMAGE_TAG
+
+artifacts:
+  files:
+    - Products_Backend/backend-deployment.yaml
+    - Products_UI/frontend-deployment.yaml
