@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-frontend
+  labels:
+    app: product-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-frontend
+  template:
+    metadata:
+      labels:
+        app: product-frontend
+    spec:
+      containers:
+        - name: product-frontend
+          image: akashchandran/dotnetfrontend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: API_URL
+              value: "http://product-backend-service:7001/api/products"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-frontend-service
+spec:
+  selector:
+    app: product-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
