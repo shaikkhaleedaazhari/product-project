@@ -1,5 +1,5 @@
 // API URL - This should point to your EC2 backend IP and port
-const API_URL = 'http://products-backend.default.svc.cluster.local/api/products';
+const API_URL = 'http://products-backend:80/api/products';
 
 // DOM Elements
 const productsContainer = document.getElementById('products-container');
