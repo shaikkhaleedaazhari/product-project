@@ -14,9 +14,9 @@ phases:
       - echo Logging in to Docker Hub...
       - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
 
-      # Generate tags
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - VERSION_TAG=v1   # You can bump this manually or fetch from version.txt / git tag
+      # Generate dynamic tags
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c1-7)
+      - VERSION_TAG=v$CODEBUILD_BUILD_NUMBER
       - echo "Image tag is $IMAGE_TAG and version tag is $VERSION_TAG"
 
   build:
