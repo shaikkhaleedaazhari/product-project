@@ -33,20 +33,16 @@ IMapper mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 // 5️⃣ CORS for your frontends
-var allowedOrigins = builder.Configuration["Frontend__Origins"];
-string[] origins = allowedOrigins?.Split(';', StringSplitOptions.RemoveEmptyEntries)
-                    ?? new[] { "http://localhost:8080" }; // fallback
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(origins)
+        // Temporarily allow any origin to confirm CORS is working
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
-
 
 var app = builder.Build();
 
@@ -58,7 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // ⚠️ Removed HTTPS redirection
-//app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
