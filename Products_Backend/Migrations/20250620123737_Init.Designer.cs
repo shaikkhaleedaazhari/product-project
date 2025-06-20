@@ -11,8 +11,8 @@ using ProductService.Data;
 namespace ProductService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250618142648_init")]
-    partial class init
+    [Migration("20250620123737_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace ProductService.Migrations
                         {
                             ProductId = 1,
                             Description = "Latest Apple iPhone with 128 GB storage",
-                            ImageUrl = "https://via.placeholder.com/300x200?text=iPhone+16e",
+                            ImageUrl = "https://s3.ap-south-1.amazonaws.com/shop.unicorn/full/51f2fa0c3fbd7d32e4c78dd85.webp",
                             Name = "iPhone 16e 128 GB",
                             Price = 56000m,
                             Stock = 50
@@ -68,7 +68,7 @@ namespace ProductService.Migrations
                         {
                             ProductId = 2,
                             Description = "Mid-range Samsung with 5G support",
-                            ImageUrl = "https://via.placeholder.com/300x200?text=Galaxy+A35",
+                            ImageUrl = "https://m.media-amazon.com/images/I/41N3oDyg3FL._SX300_SY300_QL70_FMwebp_.jpg",
                             Name = "Samsung Galaxy A35 5G",
                             Price = 150000m,
                             Stock = 40
@@ -77,7 +77,7 @@ namespace ProductService.Migrations
                         {
                             ProductId = 3,
                             Description = "Flagship killer OnePlus 12",
-                            ImageUrl = "https://via.placeholder.com/300x200?text=OnePlus+12",
+                            ImageUrl = "https://m.media-amazon.com/images/I/41J4+TiUz6L._SY300_SX300_.jpg",
                             Name = "OnePlus 12",
                             Price = 64999m,
                             Stock = 60
