@@ -19,6 +19,7 @@ phases:
       - echo "Logging in to Docker Hub..."
       - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
       - VERSION_TAG=v$CODEBUILD_BUILD_NUMBER
+      - export VERSION_TAG
       - echo "Version tag is $VERSION_TAG"
 
   build:
@@ -46,6 +47,7 @@ phases:
       - echo "Copying deployment YAMLs to root for CodePipeline..."
       - cp Products_Backend/backend-deployment.yaml .
       - cp Products_UI/frontend-deployment.yaml .
+      - cp ingress.yaml .
       - echo "Final root directory content:"
       - ls -lh
 
@@ -53,3 +55,4 @@ artifacts:
   files:
     - backend-deployment.yaml
     - frontend-deployment.yaml
+    - ingress.yaml
