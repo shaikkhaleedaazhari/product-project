@@ -12,7 +12,7 @@ phases:
   install:
     commands:
       - echo "Starting install phase..."
-      - set -e  # exit if any command fails
+      - set -e  # Exit on error
 
   pre_build:
     commands:
@@ -47,7 +47,7 @@ phases:
       - echo "Copying deployment YAMLs to root for CodePipeline..."
       - cp Products_Backend/backend-deployment.yaml .
       - cp Products_UI/frontend-deployment.yaml .
-      - cp ingress.yaml .
+      - if [ "$(dirname ingress.yaml)" != "." ]; then cp ingress.yaml .; else echo "ingress.yaml already in root, skipping copy"; fi
       - echo "Final root directory content:"
       - ls -lh
 
