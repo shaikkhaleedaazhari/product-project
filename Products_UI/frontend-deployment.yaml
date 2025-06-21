@@ -32,6 +32,6 @@ spec:
     app: product-frontend
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
