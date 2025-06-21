@@ -21,7 +21,7 @@ spec:
             - containerPort: 8080
           env:
             - name: API_URL
-              value: "http://product-backend-service:7001/api/products"
+              value: "/api/products"
 ---
 apiVersion: v1
 kind: Service
