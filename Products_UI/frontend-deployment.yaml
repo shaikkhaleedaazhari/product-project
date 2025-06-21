@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: product-frontend
-          image: akashchandran/product-frontend:v15
+          image: akashchandran/product-frontend:v34
           ports:
             - containerPort: 8080
           env:
