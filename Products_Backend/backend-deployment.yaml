@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: product-backend
-          image: akashchandran/product-backend:v15
+          image: akashchandran/product-backend:v34
           ports:
             - containerPort: 7001
           env:
