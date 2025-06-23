@@ -21,7 +21,7 @@ spec:
             - containerPort: 7001
           env:
             - name: ConnectionStrings__DefaultConnection
-              value: "Server=dotnet.c3ayu4amyt4v.us-east-1.rds.amazonaws.com,1433;Database=ProductsDb;User Id=admin;Password=adminadmin;TrustServerCertificate=True;MultipleActiveResultSets=true"
+              value: "Server=sqlserver-express-ft.cziocmm4ith3.us-east-2.rds.amazonaws.com,1433;Database=ProductsDb;User Id=adminuser;Password=YourSecurePassword123!;TrustServerCertificate=True;MultipleActiveResultSets=true"
             - name: Frontend__Origins
               value: "http://localhost:8080;http://product-frontend-service:8080"
 ---
