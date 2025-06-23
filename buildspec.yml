@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: us-east-1               # change if needed
-    ECR_ACCOUNT_ID: 715841362372               # your AWS account ID
+    AWS_DEFAULT_REGION: us-east-2               # change if needed
+    ECR_ACCOUNT_ID: 715841362372                # your AWS account ID
     BACKEND_IMAGE_NAME: product-backend
     FRONTEND_IMAGE_NAME: product-frontend
 
@@ -12,7 +12,6 @@ phases:
     commands:
       - echo "Starting install phase..."
       - set -e
-      # Install jq on Amazon Linux or Debian/Ubuntu
       - if command -v yum >/dev/null 2>&1; then yum install -y jq; fi
       - if command -v apt-get >/dev/null 2>&1; then apt-get update && apt-get install -y jq; fi
       - echo "Logging in to ECR..."
@@ -32,7 +31,6 @@ phases:
       - docker build -t $BACKEND_IMAGE_NAME:$VERSION_TAG .
       - docker tag $BACKEND_IMAGE_NAME:$VERSION_TAG $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$BACKEND_IMAGE_NAME:$VERSION_TAG
       - cd ..
-
       - echo "Building frontend image..."
       - cd Products_UI
       - docker build -t $FRONTEND_IMAGE_NAME:$VERSION_TAG .
@@ -43,15 +41,12 @@ phases:
     commands:
       - echo "Pushing backend to ECR..."
       - docker push $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$BACKEND_IMAGE_NAME:$VERSION_TAG
-
       - echo "Pushing frontend to ECR..."
       - docker push $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$FRONTEND_IMAGE_NAME:$VERSION_TAG
-
       - echo "Copying Kubernetes manifests to workspace root..."
-      - cp Products_Backend/backend-deployment.yaml .
-      - cp Products_UI/frontend-deployment.yaml .
-      - cp ingress.yaml . || echo "ingress.yaml already in root, skipping copy"
-
+      - cp Products_Backend/backend-deployment.yaml . || echo "backend-deployment.yaml not found"
+      - cp Products_UI/frontend-deployment.yaml . || echo "frontend-deployment.yaml not found"
+      - cp ingress.yaml . || echo "ingress.yaml not found or already present"
       - echo "Final workspace contents:"
       - ls -lh
 
