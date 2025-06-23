@@ -24,9 +24,6 @@ phases:
       - export VERSION_TAG
       - echo "Version tag is $VERSION_TAG"
 
-      - echo "Logging in to Docker Hub..."
-      - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-
   build:
     commands:
       - echo "Building backend image..."
