@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: us-east-1               # change if needed
-    ECR_ACCOUNT_ID: 715841362372               # your AWS account ID
+    AWS_DEFAULT_REGION: us-east-1
+    ECR_ACCOUNT_ID: 715841362372
     BACKEND_IMAGE_NAME: product-backend
     FRONTEND_IMAGE_NAME: product-frontend
 
@@ -12,7 +12,6 @@ phases:
     commands:
       - echo "Starting install phase..."
       - set -e
-      # Install jq on Amazon Linux or Debian/Ubuntu
       - if command -v yum >/dev/null 2>&1; then yum install -y jq; fi
       - if command -v apt-get >/dev/null 2>&1; then apt-get update && apt-get install -y jq; fi
       - echo "Logging in to ECR..."
@@ -24,6 +23,9 @@ phases:
       - VERSION_TAG=v$CODEBUILD_BUILD_NUMBER
       - export VERSION_TAG
       - echo "Version tag is $VERSION_TAG"
+
+      - echo "Logging in to Docker Hub..."
+      - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
 
   build:
     commands:
