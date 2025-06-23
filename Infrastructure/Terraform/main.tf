@@ -1,3 +1,18 @@
+terraform {
+  required_version = ">= 1.3.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.1"
@@ -11,21 +26,29 @@ module "vpc" {
   single_nat_gateway      = true
   map_public_ip_on_launch = true
 
-  # One tag-map per public subnet (in same order as public_subnets)
-  public_subnet_tags = [
-    { Name = "three-tier-vpc-public-1" },
-    { Name = "three-tier-vpc-public-2" },
-  ]
-
-  # One tag-map per private subnet (in same order as private_subnets)
-  private_subnet_tags = [
-    { Name = "three-tier-vpc-private-1" },
-    { Name = "three-tier-vpc-private-2" },
-  ]
-
   tags = {
     Name = "three-tier-vpc"
   }
+}
+
+# After the VPC module, tag each subnet individually
+locals {
+  public_subnet_ids  = module.vpc.public_subnets
+  private_subnet_ids = module.vpc.private_subnets
+}
+
+resource "aws_ec2_tag" "public_subnet_names" {
+  for_each    = { for idx, id in local.public_subnet_ids  : id => idx }
+  resource_id = each.key
+  key         = "Name"
+  value       = "three-tier-vpc-public-${each.value + 1}"
+}
+
+resource "aws_ec2_tag" "private_subnet_names" {
+  for_each    = { for idx, id in local.private_subnet_ids : id => idx }
+  resource_id = each.key
+  key         = "Name"
+  value       = "three-tier-vpc-private-${each.value + 1}"
 }
 
 resource "aws_security_group" "eks_sg" {
@@ -95,6 +118,7 @@ resource "aws_security_group" "rds_sg" {
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "rds-subnet-group"
   subnet_ids = module.vpc.private_subnets
+
   tags = {
     Name = "rds-subnet-group"
   }
