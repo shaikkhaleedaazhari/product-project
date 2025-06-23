@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: us-east-2
+    AWS_DEFAULT_REGION: us-east-1
     ECR_ACCOUNT_ID: 715841362372
     BACKEND_IMAGE_NAME: product-backend
     FRONTEND_IMAGE_NAME: product-frontend
