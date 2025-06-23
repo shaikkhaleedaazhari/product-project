@@ -2,21 +2,26 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.1"
 
-  name                  = "three-tier-vpc"
-  cidr                  = var.vpc_cidr
-  azs                   = var.availability_zones
-  public_subnets        = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnets       = ["10.0.3.0/24", "10.0.4.0/24"]
-  enable_nat_gateway    = true
-  single_nat_gateway    = true
+  name                    = "three-tier-vpc"
+  cidr                    = var.vpc_cidr
+  azs                     = var.availability_zones
+  public_subnets          = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets         = ["10.0.3.0/24", "10.0.4.0/24"]
+  enable_nat_gateway      = true
+  single_nat_gateway      = true
   map_public_ip_on_launch = true
 
-  public_subnet_tags = {
-    Name = "three-tier-vpc-public-${count.index + 1}"
-  }
-  private_subnet_tags = {
-    Name = "three-tier-vpc-private-${count.index + 1}"
-  }
+  # One tag-map per public subnet (in same order as public_subnets)
+  public_subnet_tags = [
+    { Name = "three-tier-vpc-public-1" },
+    { Name = "three-tier-vpc-public-2" },
+  ]
+
+  # One tag-map per private subnet (in same order as private_subnets)
+  private_subnet_tags = [
+    { Name = "three-tier-vpc-private-1" },
+    { Name = "three-tier-vpc-private-2" },
+  ]
 
   tags = {
     Name = "three-tier-vpc"
