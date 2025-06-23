@@ -45,11 +45,16 @@ module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "20.8.4" # Latest stable as of mid-2024
 
+  version         = "20.8.4" # Latest stable as of mid-2024
+
   cluster_name    = var.eks_cluster_name
   cluster_version = "1.32"
   subnet_ids      = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
 
+  eks_managed_node_groups = {
   eks_managed_node_groups = {
     eks_nodes = {
       desired_size = 2
@@ -57,8 +62,15 @@ module "eks" {
       min_size     = 1
       instance_types = ["t3.medium"]
       disk_size      = 20
+      desired_size = 2
+      max_size     = 3
+      min_size     = 1
+      instance_types = ["t3.medium"]
+      disk_size      = 20
     }
   }
+
+  cluster_endpoint_public_access = true
 
   cluster_endpoint_public_access = true
 
