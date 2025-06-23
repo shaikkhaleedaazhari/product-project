@@ -1,1 +1,37 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-frontend
+  labels:
+    app: product-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-frontend
+  template:
+    metadata:
+      labels:
+        app: product-frontend
+    spec:
+      containers:
+        - name: product-frontend
+          image: 715841362372.dkr.ecr.us-east-2.amazonaws.com/product-frontend:v21
+          ports:
+            - containerPort: 8080
+          env:
+            - name: API_URL
+              value: "/api/products"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-frontend-service
+spec:
+  selector:
+    app: product-frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
