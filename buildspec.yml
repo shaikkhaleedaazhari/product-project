@@ -2,52 +2,59 @@ version: 0.2
 
 env:
   variables:
+    AWS_DEFAULT_REGION: us-east-1
+    ECR_ACCOUNT_ID: 715841362372       
     BACKEND_IMAGE_NAME: product-backend
     FRONTEND_IMAGE_NAME: product-frontend
-  secrets-manager:
-    DOCKERHUB_USERNAME: dockerhub:username
-    DOCKERHUB_PASSWORD: dockerhub:password
 
 phases:
   install:
+    runtime-versions:
+      docker: 20
     commands:
-      - echo "Starting install phase..."
-      - set -e  # Exit on error
+      - echo "Installing jq for parsing AWS CLI output..."
+      - yum install -y jq || apt-get update && apt-get install -y jq
+      - echo "Logging in to ECR..."
+      # fetch ECR login password and login
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION \
+          | docker login --username AWS --password-stdin $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
   pre_build:
     commands:
-      - echo "Logging in to Docker Hub..."
-      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - echo "Setting version tag from build number..."
       - VERSION_TAG=v$CODEBUILD_BUILD_NUMBER
       - export VERSION_TAG
       - echo "Version tag is $VERSION_TAG"
 
   build:
     commands:
-      - echo "Building backend image..."
+      - echo "Building and tagging backend image..."
       - cd Products_Backend
       - docker build -t $BACKEND_IMAGE_NAME:$VERSION_TAG .
-      - docker tag $BACKEND_IMAGE_NAME:$VERSION_TAG $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$VERSION_TAG
+      - docker tag $BACKEND_IMAGE_NAME:$VERSION_TAG \
+          $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$BACKEND_IMAGE_NAME:$VERSION_TAG
       - cd ..
 
-      - echo "Building frontend image..."
+      - echo "Building and tagging frontend image..."
       - cd Products_UI
       - docker build -t $FRONTEND_IMAGE_NAME:$VERSION_TAG .
-      - docker tag $FRONTEND_IMAGE_NAME:$VERSION_TAG $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$VERSION_TAG
+      - docker tag $FRONTEND_IMAGE_NAME:$VERSION_TAG \
+          $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$FRONTEND_IMAGE_NAME:$VERSION_TAG
       - cd ..
 
   post_build:
     commands:
-      - echo "Pushing backend image to Docker Hub..."
-      - docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$VERSION_TAG
+      - echo "Pushing backend image to ECR..."
+      - docker push $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$BACKEND_IMAGE_NAME:$VERSION_TAG
 
-      - echo "Pushing frontend image to Docker Hub..."
-      - docker push $DOCKERHUB_USERNAME/$FRONTEND_IMAGE_NAME:$VERSION_TAG
+      - echo "Pushing frontend image to ECR..."
+      - docker push $ECR_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$FRONTEND_IMAGE_NAME:$VERSION_TAG
 
-      - echo "Copying deployment YAMLs to root for CodePipeline..."
+      - echo "Copying Kubernetes manifests to root for CodePipeline..."
       - cp Products_Backend/backend-deployment.yaml .
       - cp Products_UI/frontend-deployment.yaml .
-      - if [ "$(dirname ingress.yaml)" != "." ]; then cp ingress.yaml .; else echo "ingress.yaml already in root, skipping copy"; fi
+      - cp ingress.yaml . || echo "ingress.yaml already in root, skipping copy"
+
       - echo "Final root directory content:"
       - ls -lh
 
