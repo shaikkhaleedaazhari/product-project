@@ -1,25 +1,34 @@
 variable "aws_region" {
-  default = "us-east-2"
+  description = "AWS region for resource provisioning"
+  default     = "us-east-2"
 }
 
 variable "vpc_cidr" {
-  default = "10.0.0.0/16"
+  description = "CIDR block for the VPC"
+  default     = "10.0.0.0/16"
 }
 
 variable "availability_zones" {
-  default = ["us-east-2a", "us-east-2b"]
+  description = "List of AZs for subnets"
+  type        = list(string)
+  default     = ["us-east-2a", "us-east-2b"]
 }
 
 variable "eks_cluster_name" {
-  default = "MyEKSCluster"
-}
-
-variable "db_username" {}
-
-variable "db_password" {
-  sensitive = true
+  description = "Name of the EKS cluster"
+  default     = "MyEKSCluster"
 }
 
 variable "db_instance_identifier" {
-  default = "sqlserver-express-ft"
+  description = "Identifier for the RDS instance"
+  default     = "sqlserver-express-ft"
+}
+
+variable "db_username" {
+  description = "Master username for RDS"
+}
+
+variable "db_password" {
+  description = "Master password for RDS"
+  sensitive   = true
 }
