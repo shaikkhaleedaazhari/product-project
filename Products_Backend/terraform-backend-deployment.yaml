@@ -1,1 +1,39 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-backend
+  labels:
+    app: product-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-backend
+  template:
+    metadata:
+      labels:
+        app: product-backend
+    spec:
+      containers:
+        - name: product-backend
+          image: 715841362372.dkr.ecr.us-east-2.amazonaws.com/product-backend:v21
+          ports:
+            - containerPort: 7001
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=dotnet.c3ayu4amyt4v.us-east-1.rds.amazonaws.com,1433;Database=ProductsDb;User Id=admin;Password=adminadmin;TrustServerCertificate=True;MultipleActiveResultSets=true"
+            - name: Frontend__Origins
+              value: "http://localhost:8080;http://product-frontend-service:8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-backend-service
+spec:
+  selector:
+    app: product-backend
+  ports:
+    - protocol: TCP
+      port: 7001
+      targetPort: 7001
+  type: ClusterIP
