@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: product-backend
-          image: akashchandran/product-backend:v36
+          image: 715841362372.dkr.ecr.us-east-1.amazonaws.com/product-backend:v21
           ports:
             - containerPort: 7001
           env:
